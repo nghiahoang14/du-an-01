@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBO and SOA Simulation</title>
+  <button class="go-to-mbo-btn" onclick="window.location.href='simulation.html';">Mô phỏng</button>
+  <button class="go-to-mbo-btn" onclick="window.location.href='MBO.html';">Go to MBO</button>
+  <button class="go-to-mbo-btn" onclick="window.location.href='SOA.html';">Go to SOA</button>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #eef2f3; 
+    }
+    .container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    h1 {
+        text-align: center;
+        background: linear-gradient(90deg, #3b5998, #8b9dc3); /* Chuyển màu nhẹ nhàng */
+        color: white;
+        margin: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        border-radius: 0 0 12px 12px;
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+    canvas {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    button {
+        background: linear-gradient(90deg, #3b5998, #4CAF50);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        margin: 0 8px 16px 8px;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #4CAF50, #3e8e41);
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MBO and SOA Simulation</h1>
+    <p>Click a button to see the behavior of Monarch Butterflies or Seagulls.</p>
+    <button onclick="simulateMBO()">Simulate MBO (Monarch Butterflies)</button>
+    <button onclick="simulateSOA()">Simulate SOA (Seagulls)</button>
+    <button onclick="stopSimulation()">Stop Simulation</button>
+    <canvas id="simulationCanvas" width="800" height="400"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("simulationCanvas");
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    let running = false; // Track whether simulation is running
+    let currentIslandIndex = 0; // Track the current island index for the butterfly to move to
+    const movementSpeed = 2; // Control the movement speed of the butterfly
+    const stopDuration = 2000; // Time to stop at each island (2 seconds)
+    let stopTimer = 0; // Timer to count how long the butterfly stays at the island
+    let isStopped = false; // Flag to check if butterfly is stopped at an island
+    let butterflies = []; // Array of butterflies
+
+    // Utility function to draw a circle
+    function drawCircle(x, y, radius, color) {
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Utility function to clear the canvas
+    function clearCanvas() {
+      ctx.clearRect(0, 0, width, height);
+    }
+
+    // Stop simulation
+    function stopSimulation() {
+      running = false;
+    }
+
+    // MBO Simulation (Monarch Butterfly Optimization)
+    function simulateMBO() {
+      running = true;
+      clearCanvas();
+      currentIslandIndex = 0; // Reset the island index
+      butterflies = []; // Reset butterflies array
+
+      const islands = [
+        { x: 100, y: 100, name: "Mexico", food: "Start", color: "blue", taskPriority: 1 }, // Mexico (start point)
+        { x: 200, y: 100, name: "Island A (Extremely Abundant)", food: "Extremely Abundant", color: "darkgreen", taskPriority: 4 },  // High priority
+        { x: 600, y: 300, name: "Island B (Abundant)", food: "Abundant", color: "lightgreen", taskPriority: 3 },  // Medium priority
+        { x: 400, y: 50, name: "Island C (Poor)", food: "Poor", color: "yellow", taskPriority: -2 },
+        { x: 300, y: 250, name: "Island D (Extremely Poor)", food: "Extremely Poor", color: "red", taskPriority: -3 },
+        { x: 700, y: 50, name: "Canada", food: "End", color: "blue", taskPriority: 5 }
+      ]; // Target islands with names and conditions
+
+      // Filter out islands with negative taskPriority
+      const validIslands = islands.filter(island => island.taskPriority > 0);
+
+      // Initialize butterflies with random positions and target them to the first valid island
+      for (let i = 0; i < 10; i++) {
+        butterflies.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          target: validIslands[currentIslandIndex], // Set target as the first valid (high priority) island
+        });
+      }
+
+      // Check if all butterflies have reached the current island
+      function checkAllButterfliesAtIsland() {
+        return butterflies.every(butterfly => {
+          const targetIsland = validIslands[currentIslandIndex];
+          const dx = targetIsland.x - butterfly.x;
+          const dy = targetIsland.y - butterfly.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          return distance <= 3; // Butterfly has reached the island if distance <= 3
+        });
+      }
+
+      // Simulation loop
+      function stepMBO() {
+        if (!running) return; // Stop if simulation is not running
+        clearCanvas();
+
+        // Draw islands and display their names and food condition
+        islands.forEach(island => {
+          drawCircle(island.x, island.y, 20, island.color);
+          ctx.fillStyle = "#000";
+          ctx.font = "12px Arial";
+          ctx.fillText(island.name, island.x - 25, island.y - 25); // Display island names
+          ctx.fillText(island.food, island.x - 25, island.y + 20); // Display food condition
+        });
+
+        // Move butterflies to the current island
+        butterflies.forEach(butterfly => {
+          const targetIsland = validIslands[currentIslandIndex];
+          const dx = targetIsland.x - butterfly.x;
+          const dy = targetIsland.y - butterfly.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          // Move towards the target island
+          if (distance > 3) {  // Butterfly moves if distance is greater than 3
+            butterfly.x += dx / distance * movementSpeed;
+            butterfly.y += dy / distance * movementSpeed;
+          } else {
+            // Butterfly reached the island, start stop timer
+            butterfly.x = targetIsland.x;  // Set butterfly at the exact island position
+            butterfly.y = targetIsland.y;
+            if (!isStopped) {
+              isStopped = true;
+              stopTimer = Date.now();
+            }
+          }
+
+          // Draw the butterfly
+          drawCircle(butterfly.x, butterfly.y, 5, "orange");
+        });
+
+        // If all butterflies are at the island, move to the next one
+        if (checkAllButterfliesAtIsland()) {
+          if (Date.now() - stopTimer >= stopDuration) {
+            // Move to the next valid island
+            currentIslandIndex = (currentIslandIndex + 1) % validIslands.length;
+            isStopped = false; // Reset stop state
+
+            // If we reached the last island, stop the simulation
+            if (currentIslandIndex === 0) {
+              running = false;
+              return;
+            }
+          }
+        }
+
+        requestAnimationFrame(stepMBO);
+      }
+
+      stepMBO();
+    }
+
+    // SOA Simulation (Seagull Optimization Algorithm)
+    function simulateSOA() {
+      running = true;
+      clearCanvas();
+      const seagulls = []; // Array of seagulls
+      const prey = { x: width / 2, y: height / 2 }; // Prey (target)
+
+      // Initialize seagulls
+      for (let i = 0; i < 10; i++) {
+        seagulls.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          angle: Math.random() * Math.PI * 2, // Random initial angle
+          spiralFactor: 0.1 + Math.random() * 0.2, // Spiral tightness
+        });
+      }
+
+      // Simulation loop
+      function stepSOA() {
+        if (!running) return; // Stop if simulation is not running
+        clearCanvas();
+
+        // Draw prey (target)
+        drawCircle(prey.x, prey.y, 15, "red");
+
+        // Move seagulls
+        seagulls.forEach(seagull => {
+          const dx = prey.x - seagull.x;
+          const dy = prey.y - seagull.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          // Move in a spiral towards the prey
+          if (distance > 5) {
+            seagull.angle += seagull.spiralFactor;
+            seagull.x += Math.cos(seagull.angle) * 2;
+            seagull.y += Math.sin(seagull.angle) * 2;
+
+            // Slight attraction towards prey
+            seagull.x += dx / distance * 1.5;
+            seagull.y += dy / distance * 1.5;
+          }
+
+          drawCircle(seagull.x, seagull.y, 5, "blue");
+        });
+
+        requestAnimationFrame(stepSOA);
+      }
+
+      stepSOA();
+    }
+  </script>
+</body

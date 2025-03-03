@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phân Bổ Nhiệm Vụ MBO</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #eef2f3; 
+      color: #333;
+    }
+    h1 {
+        text-align: center;
+        background: linear-gradient(90deg, #3b5998, #8b9dc3); /* Chuyển màu nhẹ nhàng */
+        color: white;
+        margin: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        border-radius: 0 0 12px 12px;
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+    .container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+   
+    .box {
+        border: 1px solid #dcdcdc;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        background-color: #fdfdfd;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .box h3 {
+        margin-top: 0;
+        color: #3b5998; /* Tông màu chủ đạo */
+        font-size: 1.5rem;
+    }
+    ul {
+        padding-left: 20px;
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+
+    ul li {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f0fbf0; /* Màu nền nhẹ hơn cho kết quả */
+        border: 1px solid #c9e2b3;
+        border-radius: 8px;
+    }
+
+    .result p {
+        margin: 10px 0;
+        font-size: 1rem;
+    }
+    .gantt-chart {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .bar {
+      height: 30px;
+      margin: 6px 0;
+      color: #ffffff;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .bar:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .bar.A {
+      background: linear-gradient(90deg, #007bff, #0056b3);
+    }
+
+    .bar.B {
+      background: linear-gradient(90deg, #28a745, #1e7e34);
+    }
+
+    .bar.C {
+      background: linear-gradient(90deg, #ffc107, #e0a800);
+    }
+
+    .bar::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    button {
+        background: linear-gradient(90deg, #3b5998, #4CAF50);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        margin: 0 8px 16px 8px;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #4CAF50, #3e8e41);
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #gantt{
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    <h1>Phân Bổ Nhiệm Vụ MBO</h1>
+    <div class="button-container">
+      <button onclick="window.location.href='MBO.html';">Go to MBO</button>
+      <button onclick="window.location.href='SOA.html';">Go to SOA</button>
+      <button onclick="window.location.href='simulation.html';">Simulation</button>
+    </div>
+    <div class="box">
+      <h3>Các Nhiệm Vụ Đầu Vào</h3>
+      <p>Nhiệm vụ và thời gian tương ứng:</p>
+      <ul id="task-list"></ul>
+    </div>
+
+    <div class="box">
+      <h3>Các Bước</h3>
+      <div id="steps"></div>
+    </div>
+
+    <div class="result">
+      <h3>Phân Bổ Cuối Cùng</h3>
+      <div id="final-allocation"></div>
+      <div id="final-fitness"></div>
+    </div>
+
+    <div class="gantt-chart">
+      <h3>Biểu Đồ Gantt</h3>
+      <div id="gantt"></div>
+    </div>
+  </div>
+
+  <script>
+    // Define tasks and employees
+    const tasks = [
+      { id: 1, time: 4 }, { id: 2, time: 6 }, { id: 3, time: 2 }, { id: 4, time: 5 },
+      { id: 5, time: 3 }, { id: 6, time: 8 }, { id: 7, time: 7 }, { id: 8, time: 3 },
+      { id: 9, time: 9 }, { id: 10, time: 20 }
+    ];
+    const employees = { A: [], B: [], C: [] };
+    const employeeTimes = { A: 0, B: 0, C: 0 };
+
+    tasks.sort((a, b) => b.time - a.time);
+
+    // Display tasks
+    const taskList = document.getElementById("task-list");
+    tasks.forEach(task => {
+      const li = document.createElement("li");
+      li.textContent = `Task ${task.id}: ${task.time} hours`;
+      taskList.appendChild(li);
+    });
+
+    // Function to calculate fitness
+    function calculateFitness(times) {
+      const totalTasks = Object.values(times).reduce((a, b) => a + b, 0);
+      const average = totalTasks / Object.keys(times).length;
+      const deviations = Object.values(times).map(time => Math.abs(time - average));
+      const fitness = deviations.reduce((a, b) => a + b, 0);
+      return { fitness, average, deviations };
+    }
+
+    // Allocate tasks using MBO-inspired strategy
+    const steps = document.getElementById("steps");
+    tasks.forEach(task => {
+      const leastBusy = Object.keys(employeeTimes).reduce((a, b) =>
+        employeeTimes[a] < employeeTimes[b] ? a : b
+      );
+
+      employees[leastBusy].push(task);
+      employeeTimes[leastBusy] += task.time;
+
+      const { fitness, average, deviations } = calculateFitness(employeeTimes);
+
+      const step = document.createElement("div");
+      step.className = "step";
+      step.innerHTML = `
+        <strong>Task ${task.id}</strong> (${task.time} hours) assigned to Employee <strong>${leastBusy}</strong><br>
+        Current times: A = ${employeeTimes.A}, B = ${employeeTimes.B}, C = ${employeeTimes.C}<br>
+        Fitness formula: |${employeeTimes.A} - ${average.toFixed(2)}| + |${employeeTimes.B} - ${average.toFixed(2)}| + |${employeeTimes.C} - ${average.toFixed(2)}|<br>
+        Fitness = ${fitness.toFixed(2)}<br>
+      `;
+      steps.appendChild(step);
+    });
+
+    // Display final allocation
+    const finalAllocation = document.getElementById("final-allocation");
+    finalAllocation.innerHTML = `
+      <p><strong>Employee A:</strong> ${employees.A.map(t => `Task ${t.id}`).join(", ")} (Total: ${employeeTimes.A} hours)</p>
+      <p><strong>Employee B:</strong> ${employees.B.map(t => `Task ${t.id}`).join(", ")} (Total: ${employeeTimes.B} hours)</p>
+      <p><strong>Employee C:</strong> ${employees.C.map(t => `Task ${t.id}`).join(", ")} (Total: ${employeeTimes.C} hours)</p>
+    `;
+
+    // Display final fitness
+    const finalFitness = document.getElementById("final-fitness");
+    const { fitness } = calculateFitness(employeeTimes);
+    finalFitness.innerHTML = `<p><strong>Final Fitness:</strong> ${fitness.toFixed(2)}</p>`;
+
+    // Generate Gantt chart
+    const gantt = document.getElementById("gantt");
+    let currentPosition = { A: 0, B: 0, C: 0 };
+
+    Object.keys(employees).forEach(employee => {
+      employees[employee].forEach(task => {
+        const bar = document.createElement("div");
+        bar.className = `bar ${employee}`;
+        bar.style.width = `${task.time * 50}px`;
+        bar.style.marginLeft = `${currentPosition[employee] * 50}px`;
+        bar.textContent = `Task ${task.id} (${task.time}h)`;
+        currentPosition[employee] += task.time;
+        gantt.appendChild(bar);
+      });
+    });
+  </script>
+</body>
+</html>

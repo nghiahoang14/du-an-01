@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phân Bổ Nhiệm Vụ SOA </title>
+  <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #eef2f3; 
+        color: #333;
+    }
+
+    h1 {
+        text-align: center;
+        background: linear-gradient(90deg, #3b5998, #8b9dc3); 
+        color: white;
+        margin: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        border-radius: 0 0 12px 12px;
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        
+      
+    }
+
+    .box {
+        border: 1px solid #dcdcdc;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        background-color: #fdfdfd;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .box h3 {
+        margin-top: 0;
+        color: #3b5998; /* Tông màu chủ đạo */
+        font-size: 1.5rem;
+    }
+
+    ul {
+        padding-left: 20px;
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+
+    ul li {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f0fbf0; /* Màu nền nhẹ hơn cho kết quả */
+        border: 1px solid #c9e2b3;
+        border-radius: 8px;
+    }
+
+    .result p {
+        margin: 10px 0;
+        font-size: 1rem;
+    }
+
+    .gantt-chart {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #dcdcdc;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .bar {
+      height: 30px;
+      margin: 6px 0;
+      color: #ffffff;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .bar:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .bar.A {
+      background: linear-gradient(90deg, #007bff, #0056b3);
+    }
+
+    .bar.B {
+      background: linear-gradient(90deg, #28a745, #1e7e34);
+    }
+
+    .bar.C {
+      background: linear-gradient(90deg, #ffc107, #e0a800);
+    }
+
+    .bar::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    button {
+        background: linear-gradient(90deg, #3b5998, #4CAF50);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        margin: 0 8px 16px 8px;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #4CAF50, #3e8e41);
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #gantt{
+      overflow: auto;
+    }
+</style>
+
+</head>
+<body>
+  <div class="container">
+    <h1>Phân Bổ Nhiệm Vụ SOA</h1>
+  <div style="text-align: center;">
+      <button class=" button go-to-mbo-btn" onclick="window.location.href='MBO.html';">Đi tới MBO</button>
+      <button class="button go-to-mbo-btn" onclick="window.location.href='SOA.html';">Đi tới SOA</button>
+      <button class="button go-to-mbo-btn" onclick="window.location.href='simulation.html';">Mô phỏng</button>
+  </div>
+    <div class="box">
+      <h3>Các Nhiệm Vụ Đầu Vào</h3>
+      <p>Nhiệm vụ và thời gian tương ứng:</p>
+      <ul id="task-list"></ul>
+    </div>
+    <div class="box">
+      <h3>Các bước</h3>
+      <div id="steps"></div>
+    </div>
+    <div class="box">
+      <h3>Phân bổ cuối cùng</h3>
+      <div id="final-allocation"></div>
+      <div id="final-fitness"></div>
+    </div>
+    <div class="gantt-chart">
+      <h3>Biểu đồ Gantt</h3>
+      <div id="gantt"></div>
+    </div>
+  </div>
+
+  <!-- Button at the bottom to go to MBO.html -->
+
+  <script>
+    // Danh sách các công việc (tasks) với thời gian
+    const tasks = [
+    { id: 1, time: 4 }, { id: 2, time: 6 }, { id: 3, time: 2 }, { id: 4, time: 5 },
+      { id: 5, time: 3 }, { id: 6, time: 8 }, { id: 7, time: 7 }, { id: 8, time: 3 },
+      { id: 9, time: 9 }, { id: 10, time: 20 }
+    ];
+
+    // Display tasks
+    const taskList = document.getElementById("task-list");
+    tasks.forEach(task => {
+      const li = document.createElement("li");
+      li.textContent = `Task ${task.id}: ${task.time} hours`;
+      taskList.appendChild(li);
+    });
+    
+    // Danh sách các công nhân (employees)
+    const employees = ['A', 'B', 'C'];
+    const maxIterations = 50;  // Số vòng lặp tối đa
+    const populationSize = 5;   // Kích thước quần thể
+    let bestFitness = Infinity; // Fitness tốt nhất
+    let globalBestSolution = null; // Giải pháp toàn cục tốt nhất
+    let stepsContainer = document.getElementById('steps');
+
+    // Hàm tạo ra một giải pháp ngẫu nhiên
+    function generateRandomSolution() {
+      return tasks.map(task => ({
+        ...task,
+        assignedTo: employees[Math.floor(Math.random() * employees.length)]
+      }));
+    }
+
+    // Hàm tính toán fitness (sử dụng công thức mới)
+    function calculateFitness(solution) {
+      const employeeTimes = { A: 0, B: 0, C: 0 };
+      solution.forEach(task => employeeTimes[task.assignedTo] += task.time);
+
+      const avg = (employeeTimes.A + employeeTimes.B + employeeTimes.C) / 3;
+      const fitness = 
+        Math.abs(employeeTimes.A - avg) +
+        Math.abs(employeeTimes.B - avg) +
+        Math.abs(employeeTimes.C - avg);
+
+      return { fitness, employeeTimes };
+    }
+
+    // Hàm di cư - migration
+    function migration(solution, bestSolution) {
+      return solution.map(task => {
+        if (Math.random() < 0.2) {
+          // Sao chép công việc từ giải pháp tốt nhất
+          const bestAssigned = bestSolution.find(t => t.id === task.id).assignedTo;
+          task.assignedTo = bestAssigned;
+        } else {
+          // Chọn ngẫu nhiên công nhân khác
+          task.assignedTo = employees[Math.floor(Math.random() * employees.length)];
+        }
+        return task;  
+      });
+    }
+
+    // Hàm tấn công - attack
+    function attack(solution, bestSolution) {
+      return solution.map(task => {
+        if (Math.random() < 0.2) {
+          task.assignedTo = employees[Math.floor(Math.random() * employees.length)];
+        } else {
+          task.assignedTo = bestSolution.find(t => t.id === task.id).assignedTo; // Giữ nguyên công việc từ giải pháp tốt nhất
+        }
+        return task;
+      });
+    }
+
+    // Hàm chạy thuật toán SOA
+    function soa() {
+      let population = Array.from({ length: populationSize }, generateRandomSolution);
+      let bestSolution = population[0];
+
+      for (let iteration = 0; iteration < maxIterations; iteration++) {
+        // Di cư và tấn công
+        population = population.map(solution => {
+          const migratedSolution = migration(solution, bestSolution);
+          return calculateFitness(migratedSolution).fitness < 
+            calculateFitness(solution).fitness 
+            ? migratedSolution
+            : solution;
+        });
+
+        // Tìm giải pháp tốt nhất trong vòng lặp này
+        const bestInIteration = population.reduce((best, sol) =>
+          calculateFitness(sol).fitness < calculateFitness(best).fitness ? sol : best,
+        bestSolution);
+
+        // Cập nhật `bestSolution` nếu tìm được giải pháp tốt hơn
+        if (calculateFitness(bestInIteration).fitness < calculateFitness(bestSolution).fitness) {
+          bestSolution = bestInIteration;
+        }
+
+        // Cập nhật giải pháp toàn cục tốt nhất
+        const currentFitness = calculateFitness(bestSolution).fitness;
+        if (currentFitness < bestFitness) {
+          bestFitness = currentFitness;
+          globalBestSolution = JSON.parse(JSON.stringify(bestSolution)); // Sao chép giải pháp tốt nhất
+        }
+
+        // Hiển thị các bước
+        const { fitness, employeeTimes } = calculateFitness(bestSolution);
+        stepsContainer.innerHTML += `<strong>Iteration ${iteration + 1}:</strong>
+        <br> A = ${employeeTimes.A}, B = ${employeeTimes.B}, C = ${employeeTimes.C}, Fitness = ${fitness}<br>`;
+      }
+    }
+
+    // Hàm hiển thị kết quả tốt nhất cuối cùng
+    function displayResults() {
+      const { fitness, employeeTimes } = calculateFitness(globalBestSolution);
+      const finalAllocation = employees.map(emp => {
+        const tasksForEmp = globalBestSolution.filter(t => t.assignedTo === emp);
+        return `<strong>${emp}:</strong> ${tasksForEmp.map(t => `Task ${t.id}`).join(', ')} (Total: ${employeeTimes[emp]}h)`;
+      }).join('<br>');
+
+      document.getElementById('final-allocation').innerHTML = finalAllocation;
+      document.getElementById('final-fitness').innerHTML = `<strong>Final Fitness:</strong> ${fitness}`;
+    }
+
+    // Tạo Gantt Chart để trực quan hóa kết quả phân bổ công việc
+    function generateGanttChart() {
+      const gantt = document.getElementById('gantt');
+      const positions = { A: 0, B: 0, C: 0 };
+
+      employees.forEach(emp => {
+        globalBestSolution.filter(t => t.assignedTo === emp).forEach(task => {
+          const bar = document.createElement('div');
+          bar.className = `bar ${emp}`;
+          bar.style.width = `${task.time * 50}px`;
+          bar.style.marginLeft = `${positions[emp] * 50}px`;
+          bar.textContent = `Task ${task.id} (${task.time}h)`;
+          gantt.appendChild(bar);
+          positions[emp] += task.time;
+        });
+      });
+    }
+
+    // Hàm khởi tạo, chạy thuật toán và hiển thị kết quả
+    function initialize() {
+      soa();
+      displayResults();
+      generateGanttChart();
+    }
+
+    // Chạy thuật toán SOA khi tải trang
+    initialize();
+  </script>
+</body>
+</html>
